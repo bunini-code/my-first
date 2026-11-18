@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RideEasy | Vehicle Rental</title>
+
+<style>
+:root {
+  --primary: #2563eb;
+  --dark: #14213d;
+  --light: #f4f7fb;
+  --green: #15803d;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--light);
+  color: #1f2937;
+}
+header {
+  background: white;
+  padding: 17px 6%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+  box-shadow: 0 2px 12px #0000000c;
+}
+.logo { font-size: 24px; font-weight: bold; color: var(--primary); }
+nav { display: flex; gap: 10px; flex-wrap: wrap; }
+button, a { cursor: pointer; }
+nav button, .btn {
+  border: 0;
+  border-radius: 8px;
+  padding: 11px 16px;
+  font-weight: bold;
+  background: var(--primary);
+  color: white;
+}
+nav button.secondary { background: #e8eefc; color: var(--dark); }
+.hero {
+  padding: 60px 6%;
+  background: linear-gradient(120deg, #14213d, #2563eb);
+  color: white;
+}
+.hero h1 { font-size: clamp(30px, 5vw, 48px); margin: 0 0 15px; }
+.hero p { line-height: 1.7; max-width: 600px; }
+.search-panel {
+  background: white;
+  color: #1f2937;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 25px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 14px;
+}
+label { display: block; font-size: 13px; margin-bottom: 7px; font-weight: bold; }
+input, select, textarea {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+  background: white;
+  font: inherit;
+}
+section { padding: 35px 6%; }
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0; }
+.filters button {
+  padding: 9px 15px; border: 1px solid #d1d5db;
+  background: white; border-radius: 20px;
+}
+.filters button.active { background: var(--primary); color: white; }
+.vehicle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 20px;
+}
+.vehicle-card {
+  background: white; border-radius: 13px; overflow: hidden;
+  box-shadow: 0 5px 20px #0000000a;
+}
+.vehicle-picture {
+  min-height: 145px; display: grid; place-items: center;
+  font-size: 75px; background: #e8efff;
+}
+.vehicle-info { padding: 18px; }
+.vehicle-info h3 { margin: 0 0 9px; }
+.muted { color: #64748b; font-size: 14px; }
+.price { font-size: 23px; font-weight: bold; color: var(--primary); }
+.price small { font-size: 13px; color: #64748b; }
+.available { color: var(--green); font-weight: bold; font-size: 13px; }
+.unavailable { color: #b91c1c; font-weight: bold; font-size: 13px; }
+.vehicle-info .btn { width: 100%; margin-top: 12px; }
+.panel {
+  background: white; border-radius: 12px; padding: 22px;
+  margin-bottom: 18px; box-shadow: 0 3px 15px #00000008;
+}
+.form-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+.stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 15px; margin-bottom: 20px;
+}
+.stat { background: #e8efff; padding: 20px; border-radius: 10px; }
+.stat strong { display: block; font-size: 27px; color: var(--primary); }
+.booking {
+  border: 1px solid #e5e7eb; padding: 15px; border-radius: 9px;
+  margin: 12px 0; overflow-wrap: anywhere;
+}
+.booking button { margin: 5px 5px 0 0; }
+.danger { background: #b91c1c !important; }
+.hidden { display: none !important; }
+.notice { padding: 12px; border-radius: 8px; background: #dcfce7; color: #166534; }
+footer { background: var(--dark); color: white; padding: 30px 6%; text-align: center; }
+@media(max-width: 500px) {
+  header { padding: 15px 4%; }
+  section { padding: 25px 4%; }
+  .hero { padding: 40px 4%; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">🚘 RideEasy</div>
+  <nav>
+    <button class="secondary" onclick="showPage('home')">Home</button>
+    <button class="secondary" onclick="showPage('bookings')">My Bookings</button>
+    <button onclick="showPage('admin')">Admin Demo</button>
+  </nav>
+</header>
+
+<main id="homePage">
+  <div class="hero">
+    <h1>Find your ride.<br>Enjoy your journey.</h1>
+    <p>Rent cars, bikes and scooters easily. Compare prices, select your dates and reserve your next ride.</p>
+
+    <div class="search-panel">
+      <div>
+        <label for="search">Search vehicle</label>
+        <input id="search" placeholder="e.g. Honda, car">
+      </div>
+      <div>
+        <label for="startDate">Pickup date</label>
+        <input type="date" id="startDate">
+      </div>
+      <div>
+        <label for="endDate">Return date</label>
+        <input type="date" id="endDate">
+      </div>
+      <div>
+        <label for="category">Vehicle type</label>
+        <select id="category">
+          <option value="All">All vehicles</option>
+          <option value="Car">Cars</option>
+          <option value="Bike">Bikes</option>
+          <option value="Scooter">Scooters</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:end">
+        <button class="btn" style="width:100%" onclick="renderVehicles()">Search</button>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div class="section-heading">
+      <div>
+        <h2>Available vehicles</h2>
+        <p class="muted">Choose the right vehicle for your journey.</p>
+      </div>
+      <select id="sort" style="max-width:180px" onchange="renderVehicles()">
+        <option value="default">Sort by: Recommended</option>
+        <option value="low">Price: Low to high</option>
+        <option value="high">Price: High to low</option>
+      </select>
+    </div>
+
+    <div class="filters">
+      <button class="active" onclick="setCategory('All',this)">All</button>
+      <button onclick="setCategory('Car',this)">🚗 Cars</button>
+      <button onclick="setCategory('Bike',this)">🏍️ Bikes</button>
+      <button onclick="setCategory('Scooter',this)">🛵 Scooters</button>
+    </div>
+
+    <div id="vehicleGrid" class="vehicle-grid"></div>
+  </section>
+</main>
+
+<section id="bookingsPage" class="hidden">
+  <h2>My Bookings</h2>
+  <p class="muted">Your demonstration booking history is saved in this browser.</p>
+  <div id="bookingList"></div>
+</section>
+
+<section id="adminPage" class="hidden">
+  <h2>Admin Dashboard</h2>
+  <p class="muted">Demonstration dashboard for managing the sample fleet and bookings.</p>
+
+  <div class="stats">
+    <div class="stat">Fleet size<strong id="fleetCount">0</strong></div>
+    <div class="stat">Bookings<strong id="bookingCount">0</strong></div>
+    <div class="stat">Confirmed<strong id="confirmedCount">0</strong></div>
+  </div>
+
+  <div class="panel">
+    <h3>Add a vehicle</h3>
+    <form id="vehicleForm">
+      <div class="form-grid">
+        <div>
+          <label for="vehicleName">Vehicle name</label>
+          <input id="vehicleName" required placeholder="e.g. Tata Nexon">
+        </div>
+        <div>
+          <label for="vehicleType">Type</label>
+          <select id="vehicleType">
+            <option>Car</option><option>Bike</option><option>Scooter</option>
+          </select>
+        </div>
+        <div>
+          <label for="vehiclePrice">Price per day (₹)</label>
+          <input id="vehiclePrice" type="number" min="1" required>
+        </div>
+        <div>
+          <label for="vehicleEmoji">Display icon</label>
+          <select id="vehicleEmoji">
+            <option value="🚗">🚗 Car</option>
+            <option value="🏍️">🏍️ Bike</option>
+            <option value="🛵">🛵 Scooter</option>
+          </select>
+        </div>
+      </div>
+      <p><button class="btn" type="submit">Add Vehicle</button></p>
+    </form>
+  </div>
+
+  <div class="panel">
+    <h3>Manage bookings</h3>
+    <div id="adminBookings"></div>
+  </div>
+</section>
+
+<footer>
+  <h3>RideEasy Vehicle Rental</h3>
+  <p>Simple, convenient and reliable vehicle rental.</p>
+  <p>Student project demonstration · © 2026 RideEasy</p>
+</footer>
+
+<script>
+const initialVehicles = [
+  {id:1,name:"Maruti Suzuki Swift",type:"Car",price:1800,emoji:"🚗"},
+  {id:2,name:"Hyundai Creta",type:"Car",price:2800,emoji:"🚙"},
+  {id:3,name:"Honda City",type:"Car",price:2500,emoji:"🚘"},
+  {id:4,name:"Royal Enfield Classic",type:"Bike",price:900,emoji:"🏍️"},
+  {id:5,name:"Yamaha FZ",type:"Bike",price:650,emoji:"🏍️"},
+  {id:6,name:"Honda Activa",type:"Scooter",price:400,emoji:"🛵"}
+];
+
+function load(key, fallback) {
+  try {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
+  } catch (error) {
+    return fallback;
+  }
+}
+let vehicles = load("rideeasyVehicles", initialVehicles);
+let bookings = load("rideeasyBookings", []);
+let activeCategory = "All";
+
+const today = new Date();
+const todayString = [
+  today.getFullYear(),
+  String(today.getMonth()+1).padStart(2,"0"),
+  String(today.getDate()).padStart(2,"0")
+].join("-");
+
+document.getElementById("startDate").min = todayString;
+document.getElementById("endDate").min = todayString;
+document.getElementById("startDate").value = todayString;
+
+function saveData() {
+  localStorage.setItem("rideeasyVehicles", JSON.stringify(vehicles));
+  localStorage.setItem("rideeasyBookings", JSON.stringify(bookings));
+}
+
+function showPage(page) {
+  ["home","bookings","admin"].forEach(name => {
+    document.getElementById(name+"Page").classList.toggle("hidden", name !== page);
+  });
+  if (page === "bookings") renderBookings();
+  if (page === "admin") renderAdmin();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function setCategory(category, button) {
+  activeCategory = category;
+  document.querySelectorAll(".filters button").forEach(b => b.classList.remove("active"));
+  button.classList.add("active");
+  document.getElementById("category").value = category;
+  renderVehicles();
+}
+
+function datesValid(start, end) {
+  return start && end && start >= todayString && end >= start;
+}
+
+function overlaps(start1, end1, start2, end2) {
+  return start1 <= end2 && start2 <= end1;
+}
+
+function isAvailable(vehicleId, start, end) {
+  return !bookings.some(b =>
+    b.vehicleId === vehicleId &&
+    b.status !== "Cancelled" &&
+    overlaps(start, end, b.start, b.end)
+  );
+}
+
+function renderVehicles() {
+  const query = document.getElementById("search").value.toLowerCase();
+  const category = document.getElementById("category").value;
+  const start = document.getElementById("startDate").value;
+  const end = document.getElementById("endDate").value;
+  const sort = document.getElementById("sort").value;
+
+  let list = vehicles.filter(v =>
+    v.name.toLowerCase().includes(query) &&
+    (category === "All" || v.type === category) &&
+    (activeCategory === "All" || v.type === activeCategory)
+  );
+
+  if (sort === "low") list.sort((a,b) => a.price-b.price);
+  if (sort === "high") list.sort((a,b) => b.price-a.price);
+
+  const grid = document.getElementById("vehicleGrid");
+  if (!list.length) {
+    grid.innerHTML = "<p>No vehicles found. Try another search.</p>";
+    return;
+  }
+
+  grid.innerHTML = list.map(v => {
+    const available = datesValid(start,end) && isAvailable(v.id,start,end);
+    return `
+      <article class="vehicle-card">
+        <div class="vehicle-picture">${v.emoji}</div>
+        <div class="vehicle-info">
+          <span class="muted">${v.type}</span>
+          <h3>${escapeHTML(v.name)}</h3>
+          <p class="price">₹${v.price.toLocaleString("en-IN")} <small>/ day</small></p>
+          <p class="${available ? "available" : "muted"}">
+            ${!datesValid(start,end) ? "Select valid rental dates" :
+              available ? "✓ Available for selected dates" : "Not available for these dates"}
+          </p>
+          <button class="btn" onclick="bookVehicle(${v.id})"
+            ${available ? "" : "disabled"}
+            style="${available ? "" : "opacity:.5;cursor:not-allowed"}">
+            Book Now
+          </button>
+        </div>
+      </article>`;
+  }).join("");
+}
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[char]));
+}
+
+function bookVehicle(id) {
+  const vehicle = vehicles.find(v => v.id === id);
+  const start = document.getElementById("startDate").value;
+  const end = document.getElementById("endDate").value;
+
+  if (!datesValid(start,end)) {
+    alert("Please select a valid pickup and return date.");
+    return;
+  }
+  if (!isAvailable(id,start,end)) {
+    alert("This vehicle is already booked for those dates.");
+    renderVehicles();
+    return;
+  }
+
+  const customer = prompt("Enter your name to make a demo booking:");
+  if (!customer || !customer.trim()) return;
+
+  const days = Math.round(
+    (new Date(end+"T00:00:00") - new Date(start+"T00:00:00")) / 86400000
+  ) + 1;
+
+  const booking = {
+    id: Date.now(),
+    vehicleId: id,
+    vehicle: vehicle.name,
+    customer: customer.trim(),
+    start, end, days,
+    total: days * vehicle.price,
+    status: "Confirmed"
+  };
+
+  bookings.push(booking);
+  saveData();
+  alert("Demo booking confirmed! Total: ₹" +
+    booking.total.toLocaleString("en-IN"));
+  renderVehicles();
+}
+
+function renderBookings() {
+  const list = document.getElementById("bookingList");
+  if (!bookings.length) {
+    list.innerHTML = '<div class="panel">No bookings yet. Browse vehicles to make your first demo booking.</div>';
+    return;
+  }
+
+  list.innerHTML = [...bookings].reverse().map(b => `
+    <div class="booking">
+      <h3>${escapeHTML(b.vehicle)}</h3>
+      <p>Booking ID: ${b.id}</p>
+      <p>Customer: ${escapeHTML(b.customer)}</p>
+      <p>Pickup: ${b.start} · Return: ${b.end}</p>
+      <p>Duration: ${b.days} day(s)</p>
+      <p class="price">₹${b.total.toLocaleString("en-IN")}</p>
+      <p>Status: <strong>${b.status}</strong></p>
+      ${b.status !== "Cancelled" ? `
+        <button class="btn danger" onclick="cancelBooking(${b.id})">Cancel Booking</button>
+      ` : ""}
+    </div>
+  `).join("");
+}
+
+function cancelBooking(id) {
+  const booking = bookings.find(b => b.id === id);
+  if (!booking || booking.status === "Cancelled") return;
+  if (!confirm("Cancel this demo booking?")) return;
+  booking.status = "Cancelled";
+  saveData();
+  renderBookings();
+  renderVehicles();
+}
+
+function renderAdmin() {
+  document.getElementById("fleetCount").textContent = vehicles.length;
+  document.getElementById("bookingCount").textContent = bookings.length;
+  document.getElementById("confirmedCount").textContent =
+    bookings.filter(b => b.status === "Confirmed").length;
+
+  const list = document.getElementById("adminBookings");
+  if (!bookings.length) {
+    list.innerHTML = "<p>No bookings to manage yet.</p>";
+    return;
+  }
+
+  list.innerHTML = [...bookings].reverse().map(b => `
+    <div class="booking">
+      <strong>${escapeHTML(b.vehicle)}</strong>
+      <p>${escapeHTML(b.customer)} · ${b.start} to ${b.end}</p>
+      <p>Total: ₹${b.total.toLocaleString("en-IN")} · ${b.status}</p>
+      ${b.status === "Confirmed" ? `
+        <button class="btn" onclick="updateStatus(${b.id},'Active')">Mark Rental Active</button>
+      ` : ""}
+      ${b.status === "Active" ? `
+        <button class="btn" onclick="updateStatus(${b.id},'Completed')">Mark Completed</button>
+      ` : ""}
+      ${b.status !== "Cancelled" && b.status !== "Completed" ? `
+        <button class="btn danger" onclick="updateStatus(${b.id},'Cancelled')">Cancel</button>
+      ` : ""}
+    </div>
+  `).join("");
+}
+
+function updateStatus(id,status) {
+  const booking = bookings.find(b => b.id === id);
+  if (!booking) return;
+  booking.status = status;
+  saveData();
+  renderAdmin();
+}
+
+document.getElementById("vehicleForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+  const name = document.getElementById("vehicleName").value.trim();
+  const type = document.getElementById("vehicleType").value;
+  const price = Number(document.getElementById("vehiclePrice").value);
+  const emoji = document.getElementById("vehicleEmoji").value;
+
+  if (!name || !Number.isFinite(price) || price <= 0) {
+    alert("Enter a valid name and price.");
+    return;
+  }
+
+  vehicles.push({id:Date.now(),name,type,price,emoji});
+  saveData();
+  this.reset();
+  renderAdmin();
+  renderVehicles();
+  alert("Vehicle added successfully!");
+});
+
+document.getElementById("search").addEventListener("input",renderVehicles);
+document.getElementById("category").addEventListener("change",() => {
+  activeCategory = "All";
+  document.querySelectorAll(".filters button").forEach(b => b.classList.remove("active"));
+  document.querySelector(".filters button").classList.add("active");
+  renderVehicles();
+});
+document.getElementById("startDate").addEventListener("change",() => {
+  document.getElementById("endDate").min =
+    document.getElementById("startDate").value;
+  renderVehicles();
+});
+document.getElementById("endDate").addEventListener("change",renderVehicles);
+
+renderVehicles();
+</script>
+</body>
+</html>
